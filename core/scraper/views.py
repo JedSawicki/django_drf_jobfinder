@@ -2,6 +2,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.renderers import TemplateHTMLRenderer
 from .models import Offer
 from .serializers import OfferSerializer, CreateOfferSerializer
 from .worker import Scraper
@@ -22,17 +23,19 @@ class OfferDetail(generics.RetrieveUpdateDestroyAPIView):
     
     
 class CreateOfferList(APIView):
-    serializer_class = CreateOfferSerializer
-    # def get(self, request, format=None):
-    #     offers = ScraperModel.objects.all()
-    #     serializer_class = OfferSerializer(offers, many=True)
-    #     return Response({"offers": serializer_class.data})
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'base.html'
+    offers = None
+    
+    def get(self, request):
+        serializer = CreateOfferSerializer()
+        return Response({'serializer': serializer})
         
     def post(self, request, format=None):
         scrapy = Scraper()
-        serializer_class = CreateOfferSerializer(data=request.data)
-        if serializer_class.is_valid():
-            key_words = serializer_class.data.get('key_words')
+        serializer = CreateOfferSerializer(data=request.data)
+        if serializer.is_valid():
+            key_words = serializer.data.get('key_words')
             print(key_words)
             key_list = []
             keys = key_words.split()
@@ -45,7 +48,6 @@ class CreateOfferList(APIView):
             except IndexError:
                 pass
         
-        return Response({"offers": offers})
+        return Response({"serializer": serializer, "offers": offers})
     
 
-            
