@@ -4,7 +4,6 @@ import random
 from requests_html import HTMLSession
 import concurrent
 from concurrent.futures import wait
-import re
 
 
 class Scraper:
@@ -88,10 +87,10 @@ class Scraper:
     
     def indeed_jobs_worker(self, key1: str, key2: Optional[str] = None, key3: Optional[str] = None) -> object:
         keys_array = [key1, key2, key3]
-        experimental_domain = f'https://pl.indeed.com/jobs?q={key1}'
+        experimental_domain = f'http://pl.indeed.com/jobs?q={key1}'
         for key in keys_array[1:]:
             if key is not None:
-                experimental_domain = experimental_domain + f'%20{key}'
+                experimental_domain = experimental_domain + f'+{key}'
         print(experimental_domain)
         s = HTMLSession()
         r = s.get(str(experimental_domain))
@@ -113,6 +112,7 @@ class Scraper:
                                 'location': j.find('div.companyLocation')[idx].text.strip(),
                                 'offer_root': 'Indeed'}
                         urllist.append(item)
+                urllist.pop(0) # clear the first unvalid element
             else:
                 raise IndexError
         except IndexError:
@@ -208,8 +208,6 @@ class Scraper:
                 result = future.result()
                 results += result
         end = time.time()
-        
-        # print(results)
         print(f'Scrap time: {end -start}')
         random.shuffle(results)
         return results

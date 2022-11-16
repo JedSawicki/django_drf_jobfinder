@@ -24,7 +24,7 @@ class OfferDetail(generics.RetrieveUpdateDestroyAPIView):
     
 class CreateOfferList(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'base.html'
+    template_name = 'job_scraper.html'
     offers = None
     
     def get(self, request):
