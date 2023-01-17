@@ -34,6 +34,7 @@ class CreateOfferList(APIView):
     def post(self, request, format=None):
         scrapy = Scraper()
         serializer = CreateOfferSerializer(data=request.data)
+        offers = None
         if serializer.is_valid():
             key_words = serializer.data.get('key_words')
             print(key_words)

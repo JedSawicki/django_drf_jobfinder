@@ -1,24 +1,18 @@
 {% load static %}
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.101.0">
-    <title>Heroes · Bootstrap v5.2</title>
+    <meta name="author" content="Jedrzej Sawicki xd">
+    <title>JobFinder</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/heroes/">
-
-    
-
-    
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-    
-
+    <!-- Custom Bootstrap import for this template -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <!-- In-built styles for this template -->
     <style>
       .bd-placeholder-img {
         font-size: 1.125rem;
@@ -77,23 +71,21 @@
     <link href="heroes.css" rel="stylesheet">
   </head>
   <body>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+    <!-- Custom bootstrap scripts for this template -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD" crossorigin="anonymous"></script>
 <main>
-  <h1 class="visually-hidden">Heroes examples</h1>
-
   <div class="px-4 py-5 my-5 text-center">
     <img class="d-block mx-auto mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
     <h1 class="display-5 fw-bold">Search for job in Poland</h1>
     <div class="col-lg-6 mx-auto">
       
-      <p class="lead mb-4">This is the API you've dreamed of! Using a form, insert up to 3 keywords of your dream job, good luck! </p>
+      <p class="lead mb-4">This is the API you've dreamed of! Using a form, insert up to 3 key-words of your dream job, good luck! Try now for free: <a class="btn btn-success mt-2" href="{% url 'scraper' %}" role="button">Try the Scraper!</a></p>
       
 
       <img src="{% static 'search2.gif' %}" alt="My image">
       <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <a class="btn btn-success" href="{% url 'scraper' %}" role="button">Try the Scraper!</a>
+
       </div>
     </div>
   </div>
@@ -101,7 +93,7 @@
   <div class="b-example-divider"></div>
 
   <div class="px-4 pt-5 my-5 text-center border-bottom">
-    <h1 class="display-4 fw-bold">Centered screenshot</h1>
+    <h1 class="display-3 fw-bold">Centered screenshot</h1>
     <div class="col-lg-6 mx-auto">
       <p class="lead mb-4">Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source toolkit, featuring Sass variables and mixins, responsive grid system, extensive prebuilt components, and powerful JavaScript plugins.</p>
       <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
@@ -124,11 +116,9 @@
         <img src="{% static 'bartek.png' %}" class="img-fluid" alt="My image">
       </div>
       <div class="col-lg-6">
-        <p class="lead mb-4">I found some interesting job offers using JobFinder!</p>
-        <footer class="blockquote-footer">Bartek, Gdańsk</footer>
+        <p class="lead mb-4 display-5">I found some interesting job offers using JobFinder!</p>
+        <footer class="blockquote-footer display-7">Bartek, Gdańsk</footer>
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-          <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Primary</button>
-          <button type="button" class="btn btn-outline-secondary btn-lg px-4">Default</button>
         </div>
       </div>
     </div>
@@ -185,18 +175,6 @@
 
   <div class="b-example-divider"></div>
 
-  <div class="bg-dark text-secondary px-4 py-5 text-center">
-    <div class="py-5">
-      <h1 class="display-5 fw-bold text-white">Dark mode hero</h1>
-      <div class="col-lg-6 mx-auto">
-        <p class="fs-5 mb-4">Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source toolkit, featuring Sass variables and mixins, responsive grid system, extensive prebuilt components, and powerful JavaScript plugins.</p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <button type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold">Custom button</button>
-          <button type="button" class="btn btn-outline-light btn-lg px-4">Secondary</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <div class="b-example-divider mb-0"></div>
 </main>
