@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import TemplateHTMLRenderer
 from .models import Offer
 from .serializers import OfferSerializer, CreateOfferSerializer
-from .worker import Scraper
+from .worker.worker import Scraper
 
 
 class OfferList(generics.ListCreateAPIView):
