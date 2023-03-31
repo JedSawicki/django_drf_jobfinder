@@ -4,6 +4,7 @@ import random
 from requests_html import HTMLSession
 import concurrent
 from concurrent.futures import wait
+from .modules.nofluff_worker import NofluffWorker
 
 
 class Scraper:
@@ -40,49 +41,6 @@ class Scraper:
         except IndexError:
             print('LinkedInWorker - No items found')
         print('linkedin len:', len(urllist))  
-        return urllist
-
-    def no_fluff_jobs_worker(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None, page: Optional[int] = 1) -> object:
-        # url = f'https://nofluffjobs.com/pl/praca-it/python?criteria=seniority%3Djunior&page=2'
-        url = f'https://nofluffjobs.com/pl/praca-it/{technology}?page={page}'
-        if seniority is not None:
-            url = f'https://nofluffjobs.com/pl/praca-it/{technology}?criteria=seniority%3D{seniority}&page={page}'
-        if second_tech is not None:
-            url = f'https://nofluffjobs.com/pl/praca-it/{technology}?criteria=seniority%3D{seniority}%20%20keyword%3D{second_tech}&page={page}'
-        if second_tech is not None and seniority is None:
-            url = f'https://nofluffjobs.com/pl/praca-it/{technology}?page={page}&criteria=requirement%3D{second_tech}'
-                    
-        print(url)
-        s = HTMLSession()
-        r = s.get(str(url))
-        urllist = []
-        try:
-            jobs = r.html.find('div.list-container.ng-star-inserted')
-
-            for j in jobs:
-                # a for hrefs
-                items = j.find('a')
-                if len(items):
-                # elements for text
-                    for idx, elem in enumerate(items):
-                        text = elem.text.split('\n')       
-                        if idx % 2 == 0:
-                            href = 'https://nofluffjobs.com' + elem.attrs['href']
-                            item = {
-                                        'href': href, 
-                                        'offer_root': 'NoFluffJobs'
-                                        }
-                            if len(text) > 1:
-                                item['name'] = text[0]
-                                item['company_name'] = text[1]
-                            else:
-                                item['name'] = text[0]
-                            urllist.append(item)
-                else:
-                    raise IndexError
-        except IndexError:
-            print('NofluffWorker - No items found')
-        print('nofluff len:', len(urllist))  
         return urllist
     
     def indeed_jobs_worker(self, key1: str, key2: Optional[str] = None, key3: Optional[str] = None) -> object:
@@ -196,7 +154,7 @@ class Scraper:
     
     def grand_scraper(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None) -> object:
         print("Scraping...")
-        threads = [self.linkedin_worker, self.no_fluff_jobs_worker, self.jobted_jobs_worker, self.indeed_jobs_worker, self.jooble_jobs_worker]
+        threads = [self.linkedin_worker, NofluffWorker(), self.jobted_jobs_worker, self.indeed_jobs_worker, self.jooble_jobs_worker]
         results = []
         start = time.time()
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
