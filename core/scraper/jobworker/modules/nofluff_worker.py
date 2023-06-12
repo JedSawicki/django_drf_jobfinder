@@ -17,7 +17,7 @@ class NofluffWorker:
     
     def __call__(self, technology: str, page: int = 1, seniority: Optional[str] = None, second_tech: Optional[str] = None) -> List:
         ''' 
-        Function defined in order to excecute Class methods while calling the Class object, 
+        Function defined in order to excecute Class methods while calling the Class:'NofluffWorker' object, 
         returning list of dictionaries by calling self.parse_nofluff_offers().
         
             Parameters
@@ -71,7 +71,7 @@ class NofluffWorker:
                 if None not in url_dict.values():
                     url = f'https://nofluffjobs.com/pl/{technology}?criteria=keyword%3D{second_tech}%20seniority%3D{seniority}&page={page}'
                 else:   
-                    for key, value in url_dict.items():
+                    for _, value in url_dict.items():
                         if value is not None:
                             url = f'https://nofluffjobs.com/pl/Python?criteria=keyword%3D{value}&page=1'
 
