@@ -5,43 +5,13 @@ from requests_html import HTMLSession
 import concurrent
 from concurrent.futures import wait
 from .modules.nofluff_worker import NofluffWorker
+from .modules.linkedin_worker import LinkedInWorker
 
 
 class Scraper:
     def __init__(self):
         self.domain = f'https://pl.linkedin.com/jobs/'
         self.linkedin_items_list = []
-
-    def linkedin_worker(self, key1: str, key2: Optional[str] = None, key3: Optional[str] = None) -> object:
-        keys_array = [key1, key2, key3]
-        experimental_domain = f'https://pl.linkedin.com/jobs/search?keywords={key1}'
-        for key in keys_array[1:]:
-            if key is not None:
-                experimental_domain = experimental_domain + f'%20{key}'
-        print(experimental_domain)
-        s = HTMLSession()
-        r = s.get(str(experimental_domain))
-        urllist = []
-        print(r.status_code)
-        try:
-            jobs = r.html.find('ul.jobs-search__results-list')
-            for j in jobs:
-                items = j.find('li')
-                for idx, elem in enumerate(items):
-                    if len(items):
-                        (href, ) = j.find('a')[idx].absolute_links
-                        item = {'name': j.find('h3.base-search-card__title')[idx].text.strip(), 
-                                'company_name': j.find('h4.base-search-card__subtitle')[idx].text.strip(), 
-                                'href': href, 
-                                'location': j.find('span.job-search-card__location')[idx].text.strip(),
-                                'offer_root': 'LinkedIn'}
-                        urllist.append(item)
-                    else:
-                        raise IndexError
-        except IndexError:
-            print('LinkedInWorker - No items found')
-        print('linkedin len:', len(urllist))  
-        return urllist
     
     def indeed_jobs_worker(self, key1: str, key2: Optional[str] = None, key3: Optional[str] = None) -> object:
         keys_array = [key1, key2, key3]
@@ -49,7 +19,7 @@ class Scraper:
         for key in keys_array[1:]:
             if key is not None:
                 experimental_domain = experimental_domain + f'+{key}'
-        print(experimental_domain)
+        #print(experimental_domain)
         s = HTMLSession()
         r = s.get(str(experimental_domain))
         urllist = []
@@ -75,7 +45,7 @@ class Scraper:
                 raise IndexError
         except IndexError:
             print('indeed - No items found')
-        print('indeed len:', len(urllist))  
+        #print('indeed len:', len(urllist))  
         return urllist
 
     def jooble_jobs_worker(self, key1: str, key2: Optional[str] = None, key3: Optional[str] = None) -> object:
@@ -84,7 +54,7 @@ class Scraper:
         for key in keys_array[1:]:
             if key is not None:
                 experimental_domain = experimental_domain + f'%20{key}'
-        print(experimental_domain)
+        #print(experimental_domain)
         s = HTMLSession()
         r = s.get(str(experimental_domain))
         urllist = []
@@ -114,7 +84,7 @@ class Scraper:
                     raise IndexError
         except IndexError:
             print('jooble - No items found')
-        print('jooble len:', len(urllist))    
+        #print('jooble len:', len(urllist))    
         return urllist
     
     def jobted_jobs_worker(self, key1: str, key2: Optional[str] = None, key3: Optional[str] = None) -> object:
@@ -123,7 +93,7 @@ class Scraper:
         for key in keys_array[1:]:
             if key is not None:
                 experimental_domain = experimental_domain + f'%20{key}'
-        print(experimental_domain)
+        #print(experimental_domain)
         s = HTMLSession()
         r = s.get(str(experimental_domain))
         urllist = []
@@ -149,12 +119,12 @@ class Scraper:
                     raise IndexError
         except IndexError:
             print('jobted - Item not found')
-        print('jobted len:', len(urllist))   
+        #print('jobted len:', len(urllist))   
         return urllist
     
     def grand_scraper(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None) -> object:
         print("Scraping...")
-        threads = [self.linkedin_worker, NofluffWorker(), self.jobted_jobs_worker, self.indeed_jobs_worker, self.jooble_jobs_worker]
+        threads = [LinkedInWorker(), NofluffWorker()]#self.jobted_jobs_worker, self.indeed_jobs_worker, self.jooble_jobs_worker]
         results = []
         start = time.time()
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
