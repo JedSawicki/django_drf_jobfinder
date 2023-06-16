@@ -68,19 +68,16 @@ class NofluffWorker:
         }
         
         with httpx.Client() as client:
-            if technology:
-                url = self.domain + f'pl/praca-it/{technology}?page={page}'
-                if all(url_dict.values()):
-                    url = self.domain +  f'pl/{technology}?criteria=keyword%3D{second_tech}%20seniority%3D{seniority}&page={page}'
-                else: 
-                    url = (self.domain + f'pl/{technology}?criteria=keyword%3D{value}&page=1' 
-                           for value in url_dict.values() if value is not None)
-                    url = next(url)
+            url = self.domain + f'pl/praca-it/{technology}?page={page}' 
+            if any(url_dict.values()):
+                url = self.domain + f'{technology}?criteria=keyword%3D{seniority}&page=1'
+                url = self.domain +  f'pl/{technology}?criteria=requirement%3D{second_tech}%20' \
+                f'seniority%3D{seniority}&page={page}' if all(url_dict.values()) else url
 
             r = client.get(url, follow_redirects=True)
-            
-        log.info(f'Nofluff url: {url}')
-        return HTMLParser(r.text)
+            log.info(f'Nofluff url: {url}')
+        
+            return HTMLParser(r.text)
 
     def parse_nofluff_offers(self, html: str) -> List:
         ''' 

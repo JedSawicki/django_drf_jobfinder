@@ -10,14 +10,14 @@ from .common import generic_url_maker
 log = logging.getLogger('django')
 
 
-class LinkedInWorker:
+class JoobleWorker:
     def __init__(self):
         ''' 
         Init fuction
         '''
         
-        self.domain = f'https://pl.linkedin.com/jobs/'
-        self.linkedin_list = []
+        self.domain = f'https://pl.jooble.org/SearchResult?ukw='
+        self.jooble_list = []
     
     def __call__(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None) -> List:
         ''' 
@@ -40,12 +40,12 @@ class LinkedInWorker:
             List of dataclass objects Offer containing job offers from given URL
         '''
         
-        html = self.get_linkedin_html_text(technology, seniority, second_tech)
-        offers = self.parse_linkedin_offers(html)
+        html = self.get_jooble_html_text(technology, seniority, second_tech)
+        offers = self.parse_jooble_offers(html)
         
         return offers
          
-    def get_linkedin_html_text(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None) -> str:
+    def get_jooble_html_text(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None) -> str:
         ''' 
         Function to open httpx library client, prepare URL of nofluffjobs and return text of that website.
         
@@ -71,16 +71,16 @@ class LinkedInWorker:
         
         with httpx.Client() as client:
             url = self.domain + f'search?keywords={technology}'
-            if any(url_dict.values()):
+            if any(url_dict.keys()):
                 url = generic_url_maker(url_dict, url)
 
             r = client.get(url, follow_redirects=True)
-            log.info(f'Linkedin url: {url}')
+            log.info(f'Jooble url: {url}')
             
-            return HTMLParser(r.text)
+        return HTMLParser(r.text)
 
 
-    def parse_linkedin_offers(self, html: str) -> List:
+    def parse_jooble_offers(self, html: str) -> List:
         ''' 
         Function to find needed text and create Offer dataobject based on required 
         
@@ -93,19 +93,20 @@ class LinkedInWorker:
             ------
             List of dataclass objects Offer
         '''
-        offers = html.css('ul.jobs-search__results-list')
-        
+        offers = html.css('div.infinite-scroll-component')
         for item in offers:
-            offer_lists_elem = item.css('li')
+            offer_lists_elem = item.css('article')
             for offer_detail in offer_lists_elem:
                 offer = Offer(
-                    name = offer_detail.css_first('h3.base-search-card__title').text(),
+                    name = offer_detail.css_first('a').text(),
                     href = offer_detail.css_first('a').attrs['href'],
-                    offer_root = 'LinkedIn',
-                    company_name = offer_detail.css_first('h4.base-search-card__subtitle').text(),
-                    location = offer_detail.css_first('span.job-search-card__location').text())
-                self.linkedin_list.append(offer)
-        log.info(f'Linkedin_worker items: {len(self.linkedin_list)}')
+                    offer_root = 'Jooble',
+                    company_name = offer_detail.css_first('p.Ya0gV9').text(),
+                    location = offer_detail.css_first('div.caption').text())
+                self.jooble_list.append(offer)
+        log.info(f'Jooble_worker items: {len(self.jooble_list)}')
+        
+        return self.jooble_list
 
-        return self.linkedin_list
+
             
