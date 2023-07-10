@@ -8,6 +8,7 @@ from .modules.nofluff_worker import NofluffWorker
 from .modules.linkedin_worker import LinkedInWorker
 from .modules.jobted_worker import JobtedWorker
 from .modules.jooble_worker import JoobleWorker
+from .modules.indeed_worker import IndeedWorker
 
 
 class Scraper:
@@ -52,7 +53,7 @@ class Scraper:
     
     def grand_scraper(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None) -> object:
         print("Scraping...")
-        threads = [LinkedInWorker(), NofluffWorker(), JobtedWorker(), JoobleWorker()]#self.jobted_jobs_worker, self.indeed_jobs_worker, self.jooble_jobs_worker]
+        threads = [LinkedInWorker(), NofluffWorker(), JobtedWorker(), JoobleWorker(), IndeedWorker()]
         results = []
         start = time.time()
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:

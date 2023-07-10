@@ -79,7 +79,7 @@ class JobtedWorker:
             r = client.get(url, follow_redirects=True)
             log.info(f'Jobted url: {url}')
             
-        return HTMLParser(r.text)
+            return HTMLParser(r.text)
 
 
     def parse_jobted_offers(self, html: str) -> List:
