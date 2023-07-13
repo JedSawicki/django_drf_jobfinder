@@ -9,5 +9,5 @@ class OfferSerializer(serializers.ModelSerializer):
         
 
 class CreateOfferSerializer(serializers.Serializer):
-    key_words = serializers.CharField(max_length=50, label='')
+    key_words = serializers.CharField(max_length=30, label='')
     

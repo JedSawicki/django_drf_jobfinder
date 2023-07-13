@@ -1,9 +1,5 @@
-import httpx
-import asyncio
 import logging
 import undetected_chromedriver as uc
-import cfscrape
-import cloudscraper
 
 from selectolax.parser import *
 from selenium import webdriver
@@ -74,7 +70,6 @@ class IndeedWorker:
             'seniority': seniority,
             'second_tech': second_tech
         }
-        
         
         # THIS WORKS!
         options = webdriver.ChromeOptions() 

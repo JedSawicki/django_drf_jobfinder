@@ -1,8 +1,8 @@
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework import status
 from .models import Offer
 from .serializers import OfferSerializer, CreateOfferSerializer
 from .jobworker.worker import Scraper
@@ -34,21 +34,16 @@ class CreateOfferList(APIView):
     def post(self, request, format=None):
         scrapy = Scraper()
         serializer = CreateOfferSerializer(data=request.data)
-        offers = None
         if serializer.is_valid():
-            key_words = serializer.data.get('key_words')
-            print(key_words)
-            key_list = []
-            keys = key_words.split()
-            for key in keys:
-                key_list.append(key)
-            while len(key_list) != 4:
-                key_list.append(None)
-            try:
-                offers = scrapy.grand_scraper(key_list[0], key_list[1], key_list[2])
-            except IndexError:
-                pass
+            key_words = serializer.data.get('key_words')         
+            key_list = [key for key in key_words.split()]    
+            while len(key_list) != 4: key_list.append(None)
+            
+            offers = scrapy.grand_scraper(key_list[0], key_list[1], key_list[2])
+            
+            return Response({"serializer": serializer, "offers": offers}, status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response({"serializer": serializer, "offers": offers})
+        
     
 
