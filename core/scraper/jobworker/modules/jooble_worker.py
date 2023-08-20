@@ -101,7 +101,7 @@ class JoobleWorker:
                     name = offer_detail.css_first('a').text(),
                     href = offer_detail.css_first('a').attrs['href'],
                     offer_root = 'Jooble',
-                    company_name = offer_detail.css_first('p.Ya0gV9').text(),
+                    company_name = ' '.join([text.text() for text in offer_detail.css('p')]),
                     location = offer_detail.css_first('div.caption').text())
                 self.jooble_list.append(offer)
         log.info(f'Jooble_worker items: {len(self.jooble_list)}')
