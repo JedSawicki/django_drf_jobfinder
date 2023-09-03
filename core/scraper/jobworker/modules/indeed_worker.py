@@ -4,6 +4,7 @@ import undetected_chromedriver as uc
 from selectolax.parser import *
 from selenium import webdriver
 from typing import Optional, List
+from webdriver_manager.chrome import ChromeDriverManager
 from .const import Offer
 from .common import generic_url_maker
 
@@ -75,8 +76,9 @@ class IndeedWorker:
         options = webdriver.ChromeOptions() 
         options.headless = True
         options.add_argument("start-maximized")
+        driver_exec_path = ChromeDriverManager().install()
         
-        with uc.Chrome(options=options) as driver:
+        with uc.Chrome(options=options, driver_executable_path=driver_exec_path) as driver:
             url = self.domain + technology
             if any(url_dict.keys()):
                 url = generic_url_maker(url_dict, url, '+')
@@ -98,7 +100,7 @@ class IndeedWorker:
             ------
             List of dataclass objects Offer
         '''
-        offers = html.css('ul.jobsearch-ResultsList')
+        offers = html.css('ul')
         
         for item in offers:
             offer_lists_elem = item.css('div.cardOutline')

@@ -97,7 +97,7 @@ class NofluffWorker:
         for item in offers:
             offer = Offer(
                 name = item.css_first('h3.posting-title__position').text(), 
-                href = self.domain + item.css_first('a').attrs['href'],
+                href = 'https://nofluffjobs.com' + item.css_first('a').attrs['href'],
                 offer_root = 'NoFluff',
                 company_name = item.css_first('span.d-block').text(),
                 location = item.css_first('span.tw-text-ellipsis').text())
