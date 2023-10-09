@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+from typing import Optional
 
 @dataclass
 class Offer:
-    name: str
-    href: str
-    offer_root: str
-    company_name: str
-    location: str
+    name: Optional[str]
+    href: Optional[str]
+    offer_root: Optional[str]
+    company_name: Optional[str]
+    location: Optional[str]

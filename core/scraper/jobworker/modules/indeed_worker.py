@@ -75,10 +75,10 @@ class IndeedWorker:
         # THIS WORKS!
         options = webdriver.ChromeOptions() 
         options.headless = True
+        options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299')
         options.add_argument("start-maximized")
-        driver_exec_path = ChromeDriverManager().install()
         
-        with uc.Chrome(options=options, driver_executable_path=driver_exec_path) as driver:
+        with uc.Chrome(options=options, use_subprocess=True) as driver:
             url = self.domain + technology
             if any(url_dict.keys()):
                 url = generic_url_maker(url_dict, url, '+')

@@ -97,14 +97,17 @@ class LinkedInWorker:
         
         for item in offers:
             offer_lists_elem = item.css('li')
-            for offer_detail in offer_lists_elem:
-                offer = Offer(
-                    name = offer_detail.css_first('h3.base-search-card__title').text(),
-                    href = offer_detail.css_first('a').attrs['href'],
-                    offer_root = 'LinkedIn',
-                    company_name = offer_detail.css_first('h4.base-search-card__subtitle').text(),
-                    location = offer_detail.css_first('span.job-search-card__location').text())
-                self.linkedin_list.append(offer)
+            try:
+                for offer_detail in offer_lists_elem:       
+                    offer = Offer(
+                        name = offer_detail.css_first('h3.base-search-card__title').text(),
+                        href = offer_detail.css_first('a').attrs['href'],
+                        offer_root = 'LinkedIn',
+                        company_name = offer_detail.css_first('h4.base-search-card__subtitle').text(),
+                        location = offer_detail.css_first('span.job-search-card__location').text())
+                    self.linkedin_list.append(offer)
+            except AttributeError:
+                log.error('AttributeError for linkedin Worker')
         log.info(f'Linkedin_worker items: {len(self.linkedin_list)}')
 
         return self.linkedin_list
