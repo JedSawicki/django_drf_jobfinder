@@ -93,17 +93,21 @@ class JoobleWorker:
             ------
             List of dataclass objects Offer
         '''
-        offers = html.css('div.infinite-scroll-component')
-        for item in offers:
-            offer_lists_elem = item.css('article')
-            for offer_detail in offer_lists_elem:
-                offer = Offer(
-                    name = offer_detail.css_first('a').text(),
-                    href = offer_detail.css_first('a').attrs['href'],
-                    offer_root = 'Jooble',
-                    company_name = ' '.join([text.text() for text in offer_detail.css('p')]),
-                    location = offer_detail.css_first('div.caption').text())
-                self.jooble_list.append(offer)
+        try:
+            offers = html.css('div.infinite-scroll-component')
+            for item in offers:
+                offer_lists_elem = item.css('article')
+                for offer_detail in offer_lists_elem:
+                    offer = Offer(
+                        name = offer_detail.css_first('a').text(),
+                        href = offer_detail.css_first('a').attrs['href'],
+                        offer_root = 'Jooble',
+                        company_name = ' '.join([text.text() for text in offer_detail.css('p')]),
+                        location = offer_detail.css_first('div.caption').text())
+                    self.jooble_list.append(offer)
+        except AttributeError as css_error:
+            log.error(f'AttributeError for {self.domain} Worker: {css_error}')
+            
         log.info(f'Jooble_worker items: {len(self.jooble_list)}')
         
         return self.jooble_list

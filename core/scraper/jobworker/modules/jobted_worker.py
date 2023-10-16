@@ -95,16 +95,18 @@ class JobtedWorker:
             ------
             List of dataclass objects Offer
         '''
-        offers = html.css('div.res-item-info')
-        
-        for item in offers:
-            offer = Offer(
-                name = item.css_first('span.res-data-title').text(),
-                href = item.css_first('a').attrs['href'],
-                offer_root = 'Jobted',
-                company_name = item.css_first('span.res-data-company').text() if item.css_first('span.res-data-company') is not None else '',
-                location = item.css_first('span.res-data-location').text())
-            self.jobted_list.append(offer)
+        try:
+            offers = html.css('div.res-item-info')
+            for item in offers:
+                offer = Offer(
+                    name = item.css_first('span.res-data-title').text(),
+                    href = item.css_first('a').attrs['href'],
+                    offer_root = 'Jobted',
+                    company_name = item.css_first('span.res-data-company').text() if item.css_first('span.res-data-company') is not None else '',
+                    location = item.css_first('span.res-data-location').text())
+                self.jobted_list.append(offer)
+        except AttributeError as css_error:
+            log.error(f'AttributeError for {self.domain} Worker: {css_error}')
         log.info(f'Jobted_worker items: {len(self.jobted_list)}')
 
         return self.jobted_list

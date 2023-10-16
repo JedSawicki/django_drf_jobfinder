@@ -2,6 +2,7 @@ import asyncio
 import time
 import random
 import concurrent
+import logging
 
 from typing import Optional
 
@@ -11,6 +12,8 @@ from .modules.linkedin_worker import LinkedInWorker
 from .modules.jobted_worker import JobtedWorker
 from .modules.jooble_worker import JoobleWorker
 from .modules.indeed_worker import IndeedWorker
+
+log = logging.getLogger('django')
 
 
 class Scraper:
@@ -45,9 +48,12 @@ class Scraper:
                 futures.append(executor.submit(thread, technology, seniority, second_tech))
             wait(futures)
             for future in concurrent.futures.as_completed(futures):
-                result = future.result()
-                self.results += result
+                try:
+                    result = future.result()
+                    self.results += result
+                except Exception as exc:
+                    log.error(exc)
         end = time.time()
-        print(f'Scrap time: {end -start}')
+        log.info(f'Scrap time: {end - start}')
         random.shuffle(self.results)
         return self.results

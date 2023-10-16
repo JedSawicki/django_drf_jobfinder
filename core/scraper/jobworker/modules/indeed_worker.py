@@ -100,18 +100,21 @@ class IndeedWorker:
             ------
             List of dataclass objects Offer
         '''
-        offers = html.css('ul')
-        
-        for item in offers:
-            offer_lists_elem = item.css('div.cardOutline')
-            for offer_detail in offer_lists_elem:
-                offer = Offer(
-                    name = offer_detail.css_first('span').text(),
-                    href = offer_detail.css_first('a').attrs['href'],
-                    offer_root = 'Indeed',
-                    company_name = offer_detail.css_first('span.companyName').text(),
-                    location = offer_detail.css_first('div.companyLocation').text())
-                self.indeed_list.append(offer)
+        try:
+            offers = html.css('ul')
+            for item in offers:
+                offer_lists_elem = item.css('div.cardOutline')
+                for offer_detail in offer_lists_elem:
+                    offer = Offer(
+                        name = offer_detail.css_first('span').text(),
+                        href = offer_detail.css_first('a').attrs['href'],
+                        offer_root = 'Indeed',
+                        company_name = offer_detail.css_first('span.companyName').text(),
+                        location = offer_detail.css_first('div.companyLocation').text())
+                    self.indeed_list.append(offer)
+        except AttributeError as css_error:
+            log.error(f'AttributeError for {self.domain} Worker: {css_error}')
+                
         log.info(f'Indeed_worker items: {len(self.indeed_list)}')
 
         return self.indeed_list

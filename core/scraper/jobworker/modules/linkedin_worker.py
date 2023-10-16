@@ -93,21 +93,20 @@ class LinkedInWorker:
             ------
             List of dataclass objects Offer
         '''
-        offers = html.css('ul.jobs-search__results-list')
-        
-        for item in offers:
+        try:
+         offers = html.css('ul.jobs-search__results-list')
+         for item in offers:
             offer_lists_elem = item.css('li')
-            try:
-                for offer_detail in offer_lists_elem:       
-                    offer = Offer(
-                        name = offer_detail.css_first('h3.base-search-card__title').text(),
-                        href = offer_detail.css_first('a').attrs['href'],
-                        offer_root = 'LinkedIn',
-                        company_name = offer_detail.css_first('h4.base-search-card__subtitle').text(),
-                        location = offer_detail.css_first('span.job-search-card__location').text())
-                    self.linkedin_list.append(offer)
-            except AttributeError:
-                log.error('AttributeError for linkedin Worker')
+            for offer_detail in offer_lists_elem:       
+                offer = Offer(
+                    name = offer_detail.css_first('h3.base-search-card__title').text(),
+                    href = offer_detail.css_first('a').attrs['href'],
+                    offer_root = 'LinkedIn',
+                    company_name = offer_detail.css_first('h4.base-search-card__subtitle').text(),
+                    location = offer_detail.css_first('span.job-search-card__location').text())
+                self.linkedin_list.append(offer)
+        except AttributeError as css_error:
+            log.error(f'AttributeError for {self.domain} Worker: {css_error}')
         log.info(f'Linkedin_worker items: {len(self.linkedin_list)}')
 
         return self.linkedin_list

@@ -92,15 +92,17 @@ class NofluffWorker:
             ------
             List of dataclass objects Offer
         '''
-        offers = html.css('a.posting-list-item')
-
-        for item in offers:
-            offer = Offer(
-                name = item.css_first('h3.posting-title__position').text(), 
-                href = 'https://nofluffjobs.com' + item.css_first('a').attrs['href'],
-                offer_root = 'NoFluff',
-                company_name = item.css_first('span.d-block').text(),
-                location = item.css_first('span.tw-text-ellipsis').text())
-            self.nofluff_list.append(offer)
+        try:
+            offers = html.css('a.posting-list-item')
+            for item in offers:
+                offer = Offer(
+                    name = item.css_first('h3.posting-title__position').text(), 
+                    href = 'https://nofluffjobs.com' + item.css_first('a').attrs['href'],
+                    offer_root = 'NoFluff',
+                    company_name = item.css_first('span.d-block').text(),
+                    location = item.css_first('span.tw-text-ellipsis').text())
+                self.nofluff_list.append(offer)
+        except AttributeError as css_error:
+            log.error(f'AttributeError for {self.domain} Worker: {css_error}')
         log.info(f'Nofluff_worker items: {len(self.nofluff_list)}')
         return self.nofluff_list
