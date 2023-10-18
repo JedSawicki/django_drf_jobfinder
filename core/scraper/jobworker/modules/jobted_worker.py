@@ -3,7 +3,7 @@ import asyncio
 import logging
 
 from selectolax.parser import *
-from typing import Optional, List
+from typing import Generator, Optional, List
 from .const import Offer
 from .common import generic_url_maker
 
@@ -42,7 +42,8 @@ class JobtedWorker:
         '''
         
         html = self.get_jobted_html_text(technology, seniority, second_tech)
-        offers = self.parse_jobted_offers(html)
+        offers = [offer for offer in self.parse_jobted_offers(html)]
+        log.info(f'Jobted_worker items: {len(offers)}')
         
         return offers
          
@@ -82,7 +83,7 @@ class JobtedWorker:
             return HTMLParser(r.text)
 
 
-    def parse_jobted_offers(self, html: str) -> List:
+    def parse_jobted_offers(self, html: str) -> Generator[Offer, None, None]:
         ''' 
         Function to find needed text and create Offer dataobject based on required 
         
@@ -93,7 +94,7 @@ class JobtedWorker:
                 
             Returns
             ------
-            List of dataclass objects Offer
+            Generator of dataclass objects Offer
         '''
         try:
             offers = html.css('div.res-item-info')
@@ -104,10 +105,6 @@ class JobtedWorker:
                     offer_root = 'Jobted',
                     company_name = item.css_first('span.res-data-company').text() if item.css_first('span.res-data-company') is not None else '',
                     location = item.css_first('span.res-data-location').text())
-                self.jobted_list.append(offer)
+                yield offer
         except AttributeError as css_error:
             log.error(f'AttributeError for {self.domain} Worker: {css_error}')
-        log.info(f'Jobted_worker items: {len(self.jobted_list)}')
-
-        return self.jobted_list
-            

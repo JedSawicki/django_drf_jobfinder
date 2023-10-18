@@ -1,6 +1,6 @@
 import httpx
-import asyncio
 import logging
+from typing import Generator
 
 from selectolax.parser import *
 from typing import Optional, List
@@ -17,8 +17,7 @@ class JoobleWorker:
         '''
         
         self.domain = f'https://pl.jooble.org/SearchResult?ukw='
-        self.jooble_list = []
-    
+        
     def __call__(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None) -> List:
         ''' 
         Function defined in order to excecute Class methods while calling the Class:'NofluffWorker' object, 
@@ -41,7 +40,9 @@ class JoobleWorker:
         '''
         
         html = self.get_jooble_html_text(technology, seniority, second_tech)
-        offers = self.parse_jooble_offers(html)
+        
+        offers = [offer for offer in self.parse_jooble_offers(html)]
+        log.info(f'Jooble_worker items: {len(offers)}')
         
         return offers
          
@@ -80,7 +81,7 @@ class JoobleWorker:
             return HTMLParser(r.text)
 
 
-    def parse_jooble_offers(self, html: str) -> List:
+    def parse_jooble_offers(self, html: str) -> Generator[Offer, None, None]:
         ''' 
         Function to find needed text and create Offer dataobject based on required 
         
@@ -91,7 +92,7 @@ class JoobleWorker:
                 
             Returns
             ------
-            List of dataclass objects Offer
+            Generator of dataclass objects Offer
         '''
         try:
             offers = html.css('div.infinite-scroll-component')
@@ -104,13 +105,11 @@ class JoobleWorker:
                         offer_root = 'Jooble',
                         company_name = ' '.join([text.text() for text in offer_detail.css('p')]),
                         location = offer_detail.css_first('div.caption').text())
-                    self.jooble_list.append(offer)
+                    yield offer
         except AttributeError as css_error:
             log.error(f'AttributeError for {self.domain} Worker: {css_error}')
             
-        log.info(f'Jooble_worker items: {len(self.jooble_list)}')
         
-        return self.jooble_list
 
 
             

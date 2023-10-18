@@ -1,6 +1,6 @@
 import httpx
-import asyncio
 import logging
+from typing import Generator
 
 from selectolax.parser import *
 from typing import Optional, List
@@ -15,8 +15,7 @@ class NofluffWorker:
         '''
         
         self.domain = 'https://nofluffjobs.com/'
-        self.nofluff_list = []
-    
+        
     def __call__(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None, page: int = 1) -> List:
         ''' 
         Function defined in order to excecute Class methods while calling the Class:'NofluffWorker' object, 
@@ -39,7 +38,9 @@ class NofluffWorker:
         '''
         
         html = self.get_nofluff_html_text(technology, seniority, second_tech, page)
-        offers = self.parse_nofluff_offers(html)
+        offers = [offer for offer in self.parse_nofluff_offers(html)]
+                 
+        log.info(f'Nofluff_worker items: {len(offers)}')
         
         return offers
          
@@ -79,7 +80,7 @@ class NofluffWorker:
         
             return HTMLParser(r.text)
 
-    def parse_nofluff_offers(self, html: str) -> List:
+    def parse_nofluff_offers(self, html: str) -> Generator[Offer, None, None]:
         ''' 
         Function to find needed text and create Offer dataobject based on required 
         
@@ -90,7 +91,7 @@ class NofluffWorker:
                 
             Returns
             ------
-            List of dataclass objects Offer
+            Generator of dataclass objects Offer
         '''
         try:
             offers = html.css('a.posting-list-item')
@@ -101,8 +102,6 @@ class NofluffWorker:
                     offer_root = 'NoFluff',
                     company_name = item.css_first('span.d-block').text(),
                     location = item.css_first('span.tw-text-ellipsis').text())
-                self.nofluff_list.append(offer)
+                yield offer
         except AttributeError as css_error:
             log.error(f'AttributeError for {self.domain} Worker: {css_error}')
-        log.info(f'Nofluff_worker items: {len(self.nofluff_list)}')
-        return self.nofluff_list

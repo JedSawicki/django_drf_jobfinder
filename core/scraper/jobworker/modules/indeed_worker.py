@@ -3,7 +3,7 @@ import undetected_chromedriver as uc
 
 from selectolax.parser import *
 from selenium import webdriver
-from typing import Optional, List
+from typing import Optional, List, Generator
 from webdriver_manager.chrome import ChromeDriverManager
 from .const import Offer
 from .common import generic_url_maker
@@ -43,7 +43,9 @@ class IndeedWorker:
         '''
         
         html = self.get_indeed_html_text(technology, seniority, second_tech)
-        offers = self.parse_indeed_offers(html)
+        offers = [offer for offer in self.parse_indeed_offers(html)]
+        
+        log.info(f'Indeed_worker items: {len(self.indeed_list)}')
         
         return offers
     
@@ -75,7 +77,8 @@ class IndeedWorker:
         # THIS WORKS!
         options = webdriver.ChromeOptions() 
         options.headless = True
-        options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299')
+        options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) \
+                            Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299')
         options.add_argument("start-maximized")
         
         with uc.Chrome(options=options, use_subprocess=True) as driver:
@@ -87,7 +90,7 @@ class IndeedWorker:
             return HTMLParser(driver.page_source)
         
         
-    def parse_indeed_offers(self, html: str) -> List:
+    def parse_indeed_offers(self, html: str) -> Generator[Offer, None, None]:
         ''' 
             Function to find needed text and create Offer dataobject based on required params
         
@@ -98,7 +101,7 @@ class IndeedWorker:
                 
             Returns
             ------
-            List of dataclass objects Offer
+            Generator of dataclass objects Offer
         '''
         try:
             offers = html.css('ul')
@@ -111,11 +114,7 @@ class IndeedWorker:
                         offer_root = 'Indeed',
                         company_name = offer_detail.css_first('span.companyName').text(),
                         location = offer_detail.css_first('div.companyLocation').text())
-                    self.indeed_list.append(offer)
+                    yield offer
         except AttributeError as css_error:
             log.error(f'AttributeError for {self.domain} Worker: {css_error}')
-                
-        log.info(f'Indeed_worker items: {len(self.indeed_list)}')
-
-        return self.indeed_list
     
