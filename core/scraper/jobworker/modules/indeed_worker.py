@@ -19,7 +19,6 @@ class IndeedWorker:
         '''
         
         self.domain = f'http://pl.indeed.com/jobs?q='
-        self.indeed_list = []
         
     def __call__(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None) -> List:
         ''' 
@@ -45,7 +44,7 @@ class IndeedWorker:
         html = self.get_indeed_html_text(technology, seniority, second_tech)
         offers = [offer for offer in self.parse_indeed_offers(html)]
         
-        log.info(f'Indeed_worker items: {len(self.indeed_list)}')
+        log.info(f'Indeed_worker items: {len(offers)}')
         
         return offers
     

@@ -15,8 +15,9 @@ class NofluffWorker:
         '''
         
         self.domain = 'https://nofluffjobs.com/'
+        self.nofluff_list = []
         
-    def __call__(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None, page: int = 1) -> List:
+    def __call__(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None, page: int = 10) -> List:
         ''' 
         Function defined in order to excecute Class methods while calling the Class:'NofluffWorker' object, 
         returning list of dictionaries by calling self.parse_nofluff_offers().
@@ -36,13 +37,14 @@ class NofluffWorker:
             ------
             List of dataclass objects Offer containing job offers from given URL
         '''
+        for page in range(1, page):
+            html = self.get_nofluff_html_text(technology, seniority, second_tech, page)
+            if html:
+                self.nofluff_list += [offer for offer in self.parse_nofluff_offers(html)]
+
+        log.info(f'Nofluff_worker items: {len(self.nofluff_list)}')
         
-        html = self.get_nofluff_html_text(technology, seniority, second_tech, page)
-        offers = [offer for offer in self.parse_nofluff_offers(html)]
-                 
-        log.info(f'Nofluff_worker items: {len(offers)}')
-        
-        return offers
+        return self.nofluff_list
          
     def get_nofluff_html_text(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None, page: int = 1) -> str:
         ''' 
@@ -71,7 +73,7 @@ class NofluffWorker:
         with httpx.Client() as client:
             url = self.domain + f'pl/praca-it/{technology}?page={page}' 
             if any(url_dict.values()):
-                url = self.domain + f'{technology}?criteria=keyword%3D{seniority}&page=1'
+                url = self.domain + f'{technology}?criteria=keyword%3D{seniority}&page={page}'
                 url = self.domain +  f'pl/{technology}?criteria=requirement%3D{second_tech}%20' \
                 f'seniority%3D{seniority}&page={page}' if all(url_dict.values()) else url
 

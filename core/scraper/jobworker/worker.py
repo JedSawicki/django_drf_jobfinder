@@ -7,6 +7,8 @@ import logging
 from typing import Optional
 
 from concurrent.futures import wait
+
+from .modules.common import filter_offers_results
 from .modules.nofluff_worker import NofluffWorker
 from .modules.linkedin_worker import LinkedInWorker
 from .modules.jobted_worker import JobtedWorker
@@ -55,5 +57,7 @@ class Scraper:
                     log.error(exc)
         end = time.time()
         log.info(f'Scrap time: {end - start}')
+        self.results = filter_offers_results(technology, seniority, second_tech, offers=self.results)
+        
         random.shuffle(self.results)
         return self.results

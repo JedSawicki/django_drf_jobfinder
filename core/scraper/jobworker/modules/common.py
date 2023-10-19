@@ -1,4 +1,7 @@
+import logging
+from .const import Offer
 
+log = logging.getLogger('django')
 
 def generic_url_maker(url_dict: dict, url: str, separator: str = '%20') -> str:
     ''' 
@@ -21,3 +24,27 @@ def generic_url_maker(url_dict: dict, url: str, separator: str = '%20') -> str:
     url += ''.join([item for item in add_keywords])
     
     return url
+
+
+def filter_offers_results(*keywords: str, offers: list[Offer, None, None]) -> list[Offer, None, None]:
+    ''' 
+    Function to filter dataclass objects Offer by name.
+    
+        Parameters
+        ----------
+        offers : list[Offer, None, None]
+            List of dataclass objects Offer
+            
+        Returns
+        ------
+        List of dataclass objects Offer filtered by name(at least 2 keywords must be present)
+    '''
+    keywords_list = set([keyword.upper() for keyword in keywords if keyword is not None])
+
+    for offer in offers:
+        strings = set([char for char in offer.name.upper().split()])
+        common_keywords = strings.intersection(keywords_list)
+        if not len(common_keywords) >= 2:
+            offers.remove(offer)
+          
+    return offers
