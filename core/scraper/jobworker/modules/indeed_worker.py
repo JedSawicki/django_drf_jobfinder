@@ -2,10 +2,10 @@ import sys
 import logging
 import undetected_chromedriver as uc
 
+
 from selectolax.parser import *
 from selenium import webdriver
 from typing import Optional, List, Generator
-from webdriver_manager.chrome import ChromeDriverManager
 from .const import Offer
 from .common import generic_url_maker
 
@@ -80,16 +80,24 @@ class IndeedWorker:
             options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) \
                                 Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299')
             options.add_argument("start-maximized")
+            options.add_argument("--disable-extensions")
+            options.add_argument('--disable-application-cache')
+            options.add_argument('--disable-gpu')
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-setuid-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
             
             with uc.Chrome(options=options, use_subprocess=True) as driver:
                 url = self.domain + technology
                 if any(url_dict.keys()):
                     url = generic_url_maker(url_dict, url, '+')
-                driver.get(url)
                 log.info(f'Indeed url: {url}')
+                driver.get(url)
+                
                 return HTMLParser(driver.page_source)
+
         except Exception as e:
-            log.warning(e)
+            log.warning('Timeout for indeed chromedriver parsing url: {e}')
         
         
     def parse_indeed_offers(self, html: str) -> Generator[Offer, None, None]:

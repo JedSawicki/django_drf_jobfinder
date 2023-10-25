@@ -45,7 +45,7 @@ def filter_offers_results(*keywords: str, offers: list[Offer, None, None]) -> li
     for offer in offers:
         strings = set([char for char in offer.name.upper().split() if char is not None])
         common_keywords = strings.intersection(keywords_list)   
-        if len(common_keywords) > 1:
+        if len(common_keywords) > 1 or len(keywords_list) == 1:
             filtered_offers.append(offer)
     
     return filtered_offers

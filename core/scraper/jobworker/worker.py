@@ -59,6 +59,7 @@ class Scraper:
         end = time.time()
         log.info(f'Scrap time: {end - start}')
         filtered_result = filter_offers_results(technology, seniority, second_tech, offers=self.results)
+        log.info(f'Filtered results: {len(filtered_result)}')
         
         random.shuffle(filtered_result)
         return filtered_result
