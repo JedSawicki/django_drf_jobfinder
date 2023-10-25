@@ -55,9 +55,10 @@ class Scraper:
                     self.results += result
                 except Exception as exc:
                     log.error(exc)
+        
         end = time.time()
         log.info(f'Scrap time: {end - start}')
-        self.results = filter_offers_results(technology, seniority, second_tech, offers=self.results)
+        filtered_result = filter_offers_results(technology, seniority, second_tech, offers=self.results)
         
-        random.shuffle(self.results)
-        return self.results
+        random.shuffle(filtered_result)
+        return filtered_result

@@ -40,11 +40,12 @@ def filter_offers_results(*keywords: str, offers: list[Offer, None, None]) -> li
         List of dataclass objects Offer filtered by name(at least 2 keywords must be present)
     '''
     keywords_list = set([keyword.upper() for keyword in keywords if keyword is not None])
+    filtered_offers = []
 
     for offer in offers:
-        strings = set([char for char in offer.name.upper().split()])
-        common_keywords = strings.intersection(keywords_list)
-        if not len(common_keywords) >= 2:
-            offers.remove(offer)
-          
-    return offers
+        strings = set([char for char in offer.name.upper().split() if char is not None])
+        common_keywords = strings.intersection(keywords_list)   
+        if len(common_keywords) > 1:
+            filtered_offers.append(offer)
+    
+    return filtered_offers

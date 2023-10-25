@@ -17,7 +17,7 @@ class NofluffWorker:
         self.domain = 'https://nofluffjobs.com/'
         self.nofluff_list = []
         
-    def __call__(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None, page: int = 10) -> List:
+    def __call__(self, technology: str, seniority: Optional[str] = None, second_tech: Optional[str] = None, page: int = 5) -> List:
         ''' 
         Function defined in order to excecute Class methods while calling the Class:'NofluffWorker' object, 
         returning list of dictionaries by calling self.parse_nofluff_offers().
@@ -74,7 +74,7 @@ class NofluffWorker:
             url = self.domain + f'pl/praca-it/{technology}?page={page}' 
             if any(url_dict.values()):
                 url = self.domain + f'{technology}?criteria=keyword%3D{seniority}&page={page}'
-                url = self.domain +  f'pl/{technology}?criteria=requirement%3D{second_tech}%20' \
+                url = self.domain +  f'pl/{technology}?criteria=keyword%3D{second_tech}%20' \
                 f'seniority%3D{seniority}&page={page}' if all(url_dict.values()) else url
 
             r = client.get(url, follow_redirects=True)

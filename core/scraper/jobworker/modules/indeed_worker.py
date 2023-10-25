@@ -1,3 +1,4 @@
+import sys
 import logging
 import undetected_chromedriver as uc
 
@@ -72,21 +73,23 @@ class IndeedWorker:
             'seniority': seniority,
             'second_tech': second_tech
         }
-        
-        # THIS WORKS!
-        options = webdriver.ChromeOptions() 
-        options.headless = True
-        options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) \
-                            Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299')
-        options.add_argument("start-maximized")
-        
-        with uc.Chrome(options=options, use_subprocess=True) as driver:
-            url = self.domain + technology
-            if any(url_dict.keys()):
-                url = generic_url_maker(url_dict, url, '+')
-            driver.get(url)
-            log.info(f'Indeed url: {url}')
-            return HTMLParser(driver.page_source)
+        try:
+            # THIS WORKS!
+            options = webdriver.ChromeOptions() 
+            options.headless = True
+            options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) \
+                                Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299')
+            options.add_argument("start-maximized")
+            
+            with uc.Chrome(options=options, use_subprocess=True) as driver:
+                url = self.domain + technology
+                if any(url_dict.keys()):
+                    url = generic_url_maker(url_dict, url, '+')
+                driver.get(url)
+                log.info(f'Indeed url: {url}')
+                return HTMLParser(driver.page_source)
+        except Exception as e:
+            log.warning(e)
         
         
     def parse_indeed_offers(self, html: str) -> Generator[Offer, None, None]:
@@ -107,13 +110,15 @@ class IndeedWorker:
             for item in offers:
                 offer_lists_elem = item.css('div.cardOutline')
                 for offer_detail in offer_lists_elem:
+                    company_info = offer_detail.css_first('div.company_location')
                     offer = Offer(
                         name = offer_detail.css_first('span').text(),
                         href = offer_detail.css_first('a').attrs['href'],
                         offer_root = 'Indeed',
-                        company_name = offer_detail.css_first('span.companyName').text(),
-                        location = offer_detail.css_first('div.companyLocation').text())
+                        company_name = company_info.css_first('span').text(),
+                        location = company_info.css('div')[-1].text())
                     yield offer
         except AttributeError as css_error:
-            log.error(f'AttributeError for {self.domain} Worker: {css_error}')
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            log.error(f'AttributeError for {self.domain} Worker: {css_error}, Traceback:{exc_type, exc_tb.tb_lineno}')
     
