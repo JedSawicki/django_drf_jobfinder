@@ -102,7 +102,7 @@ class NofluffWorker:
                     name = item.css_first('h3.posting-title__position').text(), 
                     href = 'https://nofluffjobs.com' + item.css_first('a').attrs['href'],
                     offer_root = 'NoFluff',
-                    company_name = item.css_first('span.d-block').text(),
+                    company_name = item.css_first('h4.company-name').text(),
                     location = item.css_first('span.tw-text-ellipsis').text())
                 yield offer
         except AttributeError as css_error:
